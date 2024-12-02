@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const placeSchema = new mongoose.Schema({
   name: {
@@ -27,4 +27,5 @@ const placeSchema = new mongoose.Schema({
 });
 
 const Place = mongoose.model("Place", placeSchema);
-module.exports = Place;
+
+export default Place;

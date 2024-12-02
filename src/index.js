@@ -1,10 +1,19 @@
-import express from "express";
+import express, { urlencoded } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-
+import router from "./routes/placeRoute.js";
 dotenv.config();
 
 const app = express();
+
+app.use(express.json());
+app.use(express.static("public/uploads"));
+app.use(express.urlencoded({ extended: true }));
+app.use("/api/v1", router);
+
+app.use("*", (req, res) => {
+  res.status(404).json({ message: "NOT FOUND" });
+});
 
 mongoose
   .connect(process.env.MONGODB_URI)
