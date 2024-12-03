@@ -1,10 +1,10 @@
 import express from "express";
 import {
   createPlace,
+  deletePlace,
   getPlace,
   getPlaceById,
   updatePlace,
-  deletePlace,
 } from "../controllers/placesController.js";
 import { upload } from "../middlewares/upload.js";
 import { validateRequest } from "../middlewares/validateRequest.js";
