@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./config/swagger.js";
 import router from "./routes/placeRoute.js";
+import userRouter from "./routes/userRoute.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1", router);
+app.use("/api/v1/auth", userRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "Selamat datang di API Find Your Place" });
