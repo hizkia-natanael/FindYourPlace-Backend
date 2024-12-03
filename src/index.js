@@ -1,11 +1,14 @@
 import express, { urlencoded } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
 import router from "./routes/placeRoute.js";
 dotenv.config();
 
 const app = express();
 
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
 app.use(express.static("public/uploads"));
 app.use(express.urlencoded({ extended: true }));
