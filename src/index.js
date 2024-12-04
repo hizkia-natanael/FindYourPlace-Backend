@@ -5,18 +5,20 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./config/swagger.js";
 import router from "./routes/placeRoute.js";
 import userRouter from "./routes/userRoute.js";
+import morgan from "morgan";
 
 dotenv.config();
 
 const app = express();
 
+app.use(morgan("dev"));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
 app.use(express.static("public/uploads"));
 app.use(express.urlencoded({ extended: true }));
 
 // Swagger UI route
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1", router);
 app.use("/api/v1/auth", userRouter);
