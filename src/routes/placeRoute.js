@@ -116,7 +116,7 @@ router.get("/place/:id", getPlaceById);
  */
 router.post(
   "/place",
-  upload.single("images"),
+  upload.single("image"),
   [
     body("name").not().isEmpty().withMessage("name is required"),
     body("description").not().isEmpty().withMessage("description is required"),
@@ -166,10 +166,18 @@ router.post(
  */
 router.put(
   "/place/:id",
-  upload.single("images"),
+  upload.single("image"),
   [
-    body("name").optional().not().isEmpty().withMessage("name tidak boleh kosong"),
-    body("description").optional().not().isEmpty().withMessage("description tidak boleh kosong"),
+    body("name")
+      .optional()
+      .not()
+      .isEmpty()
+      .withMessage("name tidak boleh kosong"),
+    body("description")
+      .optional()
+      .not()
+      .isEmpty()
+      .withMessage("description tidak boleh kosong"),
   ],
   validateRequest,
   updatePlace

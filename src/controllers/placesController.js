@@ -25,10 +25,10 @@ export const getPlaceById = async (req, res) => {
 
 export const createPlace = async (req, res) => {
   const { name, description, googleMapsLink } = req.body;
-  const images = req.file ? req.file.filename : null;
+  const image = req.file ? req.file.filename : null;
 
   try {
-    const places = new Place({ name, description, googleMapsLink, images });
+    const places = new Place({ name, description, googleMapsLink, image });
     const savePlace = await places.save();
     return res.status(201).json({ message: "create place", data: savePlace });
   } catch (error) {
@@ -37,38 +37,31 @@ export const createPlace = async (req, res) => {
 };
 
 export const updatePlace = async (req, res) => {
+  const placeId = req.params.id;
+  const { name, description, googleMapsLink } = req.body;
+  const newImage = req.file ? req.file.filename : null;
+
   try {
-    const { id } = req.params;
-    const updateData = {
-      name: req.body.name,
-      description: req.body.description,
-      googleMapsLink: req.body.googleMapsLink,
-    };
+    const place = await Place.findById(placeId);
 
-    // Jika ada file gambar baru
-    if (req.file) {
-      updateData.images = [req.file.filename];
+    if (!place) {
+      return res.status(404).json({ message: "Place not found" });
+    }
+    if (newImage) {
+      uploadRemover(place.image);
     }
 
-    const updatedPlace = await Place.findByIdAndUpdate(
-      id,
-      { 
-        ...updateData,
-        updatedAt: Date.now()
-      },
-      { new: true }
-    );
+    place.name = name;
+    place.description = description;
+    place.googleMapsLink = googleMapsLink;
+    place.image = newImage ? newImage : place.image;
 
-    if (!updatedPlace) {
-      return res.status(404).json({ message: "Tempat tidak ditemukan" });
-    }
-
-    res.json({
-      message: "Tempat berhasil diupdate",
-      data: updatedPlace,
-    });
+    const updatedPlace = await place.save();
+    return res
+      .status(200)
+      .json({ message: "Update place", data: updatedPlace });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: "Error updating place" });
   }
 };
 

@@ -12,7 +12,7 @@ const placeSchema = new mongoose.Schema({
   googleMapsLink: {
     type: String,
   },
-  images: {
+  image: {
     type: [String],
     default: [],
   },
