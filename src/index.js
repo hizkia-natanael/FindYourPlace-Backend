@@ -6,10 +6,18 @@ import swaggerSpec from "./config/swagger.js";
 import placeRouter from "./routes/placeRoute.js";
 import userRouter from "./routes/userRoute.js";
 import morgan from "morgan";
+import cors from 'cors'; // Impor cors
 
 dotenv.config();
 
 const app = express();
+
+// Konfigurasi CORS
+app.use(cors({
+  origin: 'http://localhost:5173', // Ganti dengan URL frontend Anda
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode yang diizinkan
+  credentials: true // Jika Anda perlu mengizinkan cookies
+}));
 
 app.use(morgan("dev"));
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -20,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 // Swagger UI route
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/api/place", placeRouter);
+app.use("/api", placeRouter);
 app.use("/api/auth", userRouter);
 
 app.get("/", (req, res) => {
