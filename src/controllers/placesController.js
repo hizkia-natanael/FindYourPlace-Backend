@@ -24,11 +24,17 @@ export const getPlaceById = async (req, res) => {
 };
 
 export const createPlace = async (req, res) => {
-  const { name, description, googleMapsLink } = req.body;
+  const { name, description, googleMapsLink, address } = req.body;
   const image = req.file ? req.file.filename : null;
 
   try {
-    const places = new Place({ name, description, googleMapsLink, image });
+    const places = new Place({
+      name,
+      description,
+      googleMapsLink,
+      image,
+      address,
+    });
     const savePlace = await places.save();
     return res.status(201).json({ message: "create place", data: savePlace });
   } catch (error) {
@@ -38,7 +44,7 @@ export const createPlace = async (req, res) => {
 
 export const updatePlace = async (req, res) => {
   const placeId = req.params.id;
-  const { name, description, googleMapsLink } = req.body;
+  const { name, description, googleMapsLink, address } = req.body;
   const newImage = req.file ? req.file.filename : null;
 
   try {
@@ -52,6 +58,7 @@ export const updatePlace = async (req, res) => {
     }
 
     place.name = name;
+    place.address = address;
     place.description = description;
     place.googleMapsLink = googleMapsLink;
     place.image = newImage ? newImage : place.image;

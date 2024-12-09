@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 // Swagger UI route
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/api/place", placeRouter);
+app.use("/api/v1", placeRouter);
 app.use("/api/auth", userRouter);
 
 app.get("/", (req, res) => {
