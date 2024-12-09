@@ -1,4 +1,4 @@
-import express, { urlencoded } from "express";
+import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
@@ -20,9 +20,8 @@ app.use(cors({
 }));
 
 app.use(morgan("dev"));
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
-app.use(express.static("public/uploads"));
+app.use("/uploads", express.static("public/uploads"));
 app.use(express.urlencoded({ extended: true }));
 
 // Swagger UI route

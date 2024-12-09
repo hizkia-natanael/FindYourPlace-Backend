@@ -11,8 +11,12 @@ const placeSchema = new mongoose.Schema({
   },
   googleMapsLink: {
     type: String,
+    required: true,
   },
-  images: {
+  address: {
+    type: String,
+  },
+  image: {
     type: [String],
     default: [],
   },
