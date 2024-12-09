@@ -27,8 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 // Swagger UI route
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/api", placeRouter);
-app.use("/api/auth", userRouter);
+app.use("/api/v1", placeRouter);
+app.use("/api/v1/auth", userRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "Selamat datang di API Find Your Place" });
