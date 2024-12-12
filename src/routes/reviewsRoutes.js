@@ -2,6 +2,7 @@
 import express from 'express';
 import {
   createReview,
+  getAllReviews,
   getReviewsByPlaceId,
   updateReview,
   deleteReview,
@@ -36,6 +37,19 @@ const router = express.Router();
  *         description: Review created successfully.
  */
 router.post('/reviews', createReview);
+
+/**
+ * @swagger
+ * /reviews:
+ *   get:
+ *     summary: Get all reviews
+ *     tags: [Review]
+ *     description: Retrieve all reviews submitted by all users. Admin access only.
+ *     responses:
+ *       200:
+ *         description: Successfully fetched all reviews.
+ */
+router.get('/reviews', getAllReviews);
 
 /**
  * @swagger

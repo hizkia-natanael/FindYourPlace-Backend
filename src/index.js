@@ -26,7 +26,7 @@ app.use(express.json());
 app.use("/uploads", express.static("public/uploads"));
 app.use(express.urlencoded({ extended: true }));
 
-// Swagger UI route
+// Swagger UI route 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1", placeRouter);

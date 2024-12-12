@@ -20,6 +20,18 @@ export const createReview = async (req, res) => {
   }
 };
 
+//Get all Reviews
+export const getAllReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find()
+      .populate('userId', 'name email') // Populate user details
+      .populate('placeId', 'name location'); // Populate place details
+    res.status(200).json({ data: reviews });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch all reviews', error: error.message });
+  }
+};
+
 // Get all reviews for a specific place
 export const getReviewsByPlaceId = async (req, res) => {
   try {
