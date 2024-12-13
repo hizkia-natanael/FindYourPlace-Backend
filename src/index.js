@@ -6,31 +6,34 @@ import swaggerSpec from "./config/swagger.js";
 import placeRouter from "./routes/placeRoute.js";
 import userRouter from "./routes/userRoute.js";
 import reviewRouter from "./routes/reviewsRoutes.js";
+import adminRouter from "./routes/adminRoute.js";
 import morgan from "morgan";
-import cors from 'cors'; 
-
-
+import cors from "cors";
+import bodyParser from "body-parser";
 dotenv.config();
 
 const app = express();
 
 // Konfigurasi CORS
-app.use(cors({
-  origin: 'http://localhost:5173', // Ganti dengan URL frontend Anda
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode yang diizinkan
-  credentials: true // Jika Anda perlu mengizinkan cookies
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Ganti dengan URL frontend Anda
+    methods: ["GET", "POST", "PUT", "DELETE"], // Metode yang diizinkan
+    credentials: true, // Jika Anda perlu mengizinkan cookies
+  })
+);
 
 app.use(morgan("dev"));
 app.use(express.json());
 app.use("/uploads", express.static("public/uploads"));
 app.use(express.urlencoded({ extended: true }));
-
-// Swagger UI route 
+app.use(bodyParser.json());
+// Swagger UI route
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1", placeRouter);
 app.use("/api/v1/auth", userRouter);
+app.use("/api/v1/auth", adminRouter);
 app.use("/api/v1/", reviewRouter);
 
 app.get("/", (req, res) => {
