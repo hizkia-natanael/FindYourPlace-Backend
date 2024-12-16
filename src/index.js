@@ -17,7 +17,7 @@ const app = express();
 // Konfigurasi CORS
 app.use(
   cors({
-    origin: "http://localhost:5173", // Ganti dengan URL frontend Anda
+    origin: "https://findyourplace-backend-production.up.railway.app/", // Ganti dengan URL frontend Anda
     methods: ["GET", "POST", "PUT", "DELETE"], // Metode yang diizinkan
     credentials: true, // Jika Anda perlu mengizinkan cookies
   })
