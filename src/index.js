@@ -1,27 +1,37 @@
-import express, { urlencoded } from "express";
+import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./config/swagger.js";
 import placeRouter from "./routes/placeRoute.js";
 import userRouter from "./routes/userRoute.js";
+import reviewRouter from "./routes/reviewsRoutes.js";
 import morgan from "morgan";
+import cors from 'cors'; 
+
 
 dotenv.config();
 
 const app = express();
 
+// Konfigurasi CORS
+app.use(cors({
+  origin: 'http://localhost:5173', // Ganti dengan URL frontend Anda
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode yang diizinkan
+  credentials: true // Jika Anda perlu mengizinkan cookies
+}));
+
 app.use(morgan("dev"));
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.json());
-app.use(express.static("public/uploads"));
+app.use("/uploads", express.static("public/uploads"));
 app.use(express.urlencoded({ extended: true }));
 
-// Swagger UI route
+// Swagger UI route 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/api/place", placeRouter);
-app.use("/api/auth", userRouter);
+app.use("/api/v1", placeRouter);
+app.use("/api/v1/auth", userRouter);
+app.use("/api/v1/", reviewRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "Selamat datang di API Find Your Place" });

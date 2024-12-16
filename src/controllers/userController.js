@@ -123,3 +123,107 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: "Terjadi kesalahan saat menghapus pengguna", error: error.message });
   }
 }; 
+
+// Mendapatkan Profile Pengguna
+export const profile = async (req, res) => {
+  try {
+    // Ambil user ID dari token yang sudah di-decode oleh middleware
+    const userId = req.user.userId;
+
+    // Cari user di database
+    const user = await User.findById(userId).select('username email');
+
+    if (!user) {
+      return res.status(404).json({ message: "Pengguna tidak ditemukan" });
+    }
+
+    res.json({
+      message: "Berhasil mengambil profil",
+      data: {
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Terjadi kesalahan saat mengambil profil",
+      error: error.message 
+    });
+  }
+};
+
+// Edit Profile Pengguna
+export const editProfile = async (req, res) => {
+  try {
+    // Ambil user ID dari token yang sudah di-decode oleh middleware
+    const userId = req.user.userId;
+
+    const { username, email, password } = req.body;
+
+    // Cari user di database
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Pengguna tidak ditemukan" });
+    }
+
+    // Validasi apakah username atau email sudah digunakan oleh pengguna lain
+    const existingUser = await User.findOne({ 
+      $or: [
+        { email },
+        { username }
+      ],
+      _id: { $ne: userId } // Kecuali user saat ini
+    });
+    
+    if (existingUser) {
+      return res.status(400).json({ 
+        message: existingUser.email === email ? 
+          "Email sudah terdaftar" : 
+          "Username sudah digunakan" 
+      });
+    }
+
+    // Update username dan email
+    if (username) user.username = username;
+    if (email) user.email = email;
+
+    // Jika password diubah, hash password baru
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
+
+    // Simpan perubahan
+    await user.save();
+
+    res.json({
+      message: "Profil berhasil diperbarui",
+      data: {
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Terjadi kesalahan saat memperbarui profil",
+      error: error.message 
+    });
+  }
+};
+
+// Sign Out Pengguna
+export const signout = async (req, res) => {
+  try {
+    // Pada sisi server, sign out hanya perlu mengirim response sukses
+    // Token akan dihapus di sisi client (local storage)
+    res.json({ 
+      message: "Berhasil keluar" 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Terjadi kesalahan saat keluar",
+      error: error.message 
+    });
+  }
+};

@@ -7,12 +7,13 @@ export const auth = (req, res, next) => {
       return res.status(401).json({ message: "Token tidak ditemukan" });
     }
 
-    const token = authHeader.split(" ")[1]; // Format: "Bearer token"
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    req.userId = decoded.userId;
+
+    // Change this line to set req.user instead of req.userId
+    req.user = { userId: decoded.userId };
     next();
   } catch (error) {
     res.status(401).json({ message: "Token tidak valid" });
   }
-}; 
+};
