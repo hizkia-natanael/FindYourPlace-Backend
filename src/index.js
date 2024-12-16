@@ -17,7 +17,7 @@ const app = express();
 // Konfigurasi CORS
 app.use(
   cors({
-    origin: "https://find-your-place-frontend.vercel.app/", // Ganti dengan URL frontend Anda
+    origin: "https://find-your-place-frontend-git-main-hizkia-natanaels-projects.vercel.app", // Ganti dengan URL frontend Anda
     methods: ["GET", "POST", "PUT", "DELETE"], // Metode yang diizinkan
     credentials: true, // Jika Anda perlu mengizinkan cookies
   })
