@@ -9,7 +9,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'https://findyourplace-backend-production.up.railway.app/',
+      url: 'https://findyourplace-backend-production.up.railway.app/api/v1',
       description: 'Development server',
     },
   ],
