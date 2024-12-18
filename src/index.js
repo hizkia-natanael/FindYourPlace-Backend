@@ -16,7 +16,14 @@ dotenv.config();
 const app = express();
 
 // Konfigurasi CORS
-app.use(cors());
+const corsOptions = {
+  origin: ['https://find-your-place-frontend.vercel.app/'], // Ganti dengan domain frontend Anda
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode yang diizinkan
+  allowedHeaders: ['Content-Type', 'Authorization'], // Header yang diizinkan
+  credentials: true, // Jika Anda perlu mengizinkan cookie
+};
+
+app.use(cors(corsOptions));
 
 app.use(morgan("dev"));
 app.use(express.json());
