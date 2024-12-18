@@ -96,6 +96,7 @@ router.get("/place/:id", getPlaceById);
  *             required:
  *               - name
  *               - description
+ *               - images
  *             properties:
  *               name:
  *                 type: string
@@ -113,17 +114,20 @@ router.get("/place/:id", getPlaceById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Place'
+ *       400:
+ *         description: Validasi gagal
  */
 router.post(
   "/place",
-  upload.single("images"), // Changed to match the Swagger schema
+  upload.single("images"), // Menggunakan field 'images' sesuai Swagger
   [
-    body("name").not().isEmpty().withMessage("name is required"),
-    body("description").not().isEmpty().withMessage("description is required"),
+    body("name").not().isEmpty().withMessage("Name is required"),
+    body("description").not().isEmpty().withMessage("Description is required"),
   ],
   validateRequest,
   createPlace
 );
+
 
 /**
  * @swagger
@@ -139,7 +143,7 @@ router.post(
  *         required: true
  *         description: ID tempat
  *     requestBody:
- *       required: true
+ *       required: false
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -161,27 +165,30 @@ router.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Place'
+ *       400:
+ *         description: Validasi gagal
  *       404:
  *         description: Tempat tidak ditemukan
  */
 router.put(
   "/place/:id",
-  upload.single("image"),
+  upload.single("images"), // Disamakan dengan 'images' untuk konsistensi
   [
     body("name")
       .optional()
       .not()
       .isEmpty()
-      .withMessage("name tidak boleh kosong"),
+      .withMessage("Name tidak boleh kosong"),
     body("description")
       .optional()
       .not()
       .isEmpty()
-      .withMessage("description tidak boleh kosong"),
+      .withMessage("Description tidak boleh kosong"),
   ],
   validateRequest,
   updatePlace
 );
+
 
 /**
  * @swagger
