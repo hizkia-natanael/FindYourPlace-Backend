@@ -116,7 +116,7 @@ router.get("/place/:id", getPlaceById);
  */
 router.post(
   "/place",
-  upload.single("image"),
+  upload.single("images"), // Changed to match the Swagger schema
   [
     body("name").not().isEmpty().withMessage("name is required"),
     body("description").not().isEmpty().withMessage("description is required"),
