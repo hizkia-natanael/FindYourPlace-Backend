@@ -6,34 +6,46 @@ import swaggerSpec from "./config/swagger.js";
 import placeRouter from "./routes/placeRoute.js";
 import userRouter from "./routes/userRoute.js";
 import reviewRouter from "./routes/reviewsRoutes.js";
-import adminRouter from "./routes/adminRoute.js";
 import morgan from "morgan";
-import cors from "cors";
-import bodyParser from "body-parser";
+import cors from 'cors'; 
+
+
 dotenv.config();
 
 const app = express();
 
 // Konfigurasi CORS
-app.use(
-  cors({
-    origin: "http://localhost:5173", // Ganti dengan URL frontend Anda
-    methods: ["GET", "POST", "PUT", "DELETE"], // Metode yang diizinkan
-    credentials: true, // Jika Anda perlu mengizinkan cookies
-  })
-);
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'https://find-your-place-frontend.vercel.app',
+      'http://localhost:5173', // Add your local development URL
+      // Add any other origins you want to allow
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 
 app.use(morgan("dev"));
 app.use(express.json());
 app.use("/uploads", express.static("public/uploads"));
 app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-// Swagger UI route
+
+// Swagger UI route 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api/v1", placeRouter);
 app.use("/api/v1/auth", userRouter);
-app.use("/api/v1/auth", adminRouter);
 app.use("/api/v1/", reviewRouter);
 
 app.get("/", (req, res) => {
