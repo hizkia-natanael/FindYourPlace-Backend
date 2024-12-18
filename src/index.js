@@ -6,6 +6,7 @@ import swaggerSpec from "./config/swagger.js";
 import placeRouter from "./routes/placeRoute.js";
 import userRouter from "./routes/userRoute.js";
 import reviewRouter from "./routes/reviewsRoutes.js";
+import adminRouter from "./routes/adminRoute.js"
 import morgan from "morgan";
 import cors from 'cors'; 
 
@@ -28,6 +29,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/v1", placeRouter);
 app.use("/api/v1/auth", userRouter);
 app.use("/api/v1/", reviewRouter);
+app.use("/api/v1/", adminRouter);
 
 app.get("/", (req, res) => {
   res.json({ message: "Selamat datang di API Find Your Place" });
