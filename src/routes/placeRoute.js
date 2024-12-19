@@ -116,7 +116,7 @@ router.get("/place/:id", getPlaceById);
  */
 router.post(
   "/place",
-  upload.single("image"),
+  upload, // Gunakan middleware upload di sini
   [
     body("name").not().isEmpty().withMessage("name is required"),
     body("description").not().isEmpty().withMessage("description is required"),
@@ -166,7 +166,7 @@ router.post(
  */
 router.put(
   "/place/:id",
-  upload.single("image"),
+  upload, // Gunakan middleware upload di sini
   [
     body("name")
       .optional()

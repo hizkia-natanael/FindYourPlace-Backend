@@ -1,20 +1,45 @@
-import multer from "multer";
+import cloudinary from 'cloudinary';
+import multer from 'multer';
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads");
-  },
-  filename: function (req, file, cb) {
-    const filename = `${Date.now()}-${file.originalname}`;
-    cb(null, filename);
-  },
-});
+// Konfigurasi Multer untuk menangani file
+const storage = multer.memoryStorage();  // Menggunakan memory storage untuk mengirim file ke Cloudinary
+const upload = multer({ storage: storage }).single('image');  // Menangani satu file dengan field 'image'
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "image/jpg" || file.mimetype === "image/png" || file.mimetype === "image/jpeg")  {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
+// Ekspor middleware upload secara terpisah
+export { upload };
+
+// Fungsi createPlace yang juga diekspor
+export const createPlace = (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ message: 'Error uploading file', error: err.message });
+    }
+
+    try {
+      const { name, description, googleMapsLink, address } = req.body;
+      // Upload gambar ke Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.buffer, {
+        folder: 'places',  // Anda dapat menentukan folder di Cloudinary
+        public_id: `${Date.now()}`, // Menentukan nama unik untuk file yang diupload
+      });
+
+      // Mendapatkan URL gambar dari Cloudinary
+      const imageUrl = result.secure_url;
+
+      // Simpan data tempat ke database
+      const place = new Place({
+        name,
+        description,
+        googleMapsLink,
+        image: imageUrl,  // Menggunakan URL gambar dari Cloudinary
+        address,
+      });
+
+      await place.save();
+      return res.status(201).json({ message: 'Place created successfully', data: place });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error creating place', error: error.message });
+    }
+  });
 };
-export const upload = multer({ storage, fileFilter });
