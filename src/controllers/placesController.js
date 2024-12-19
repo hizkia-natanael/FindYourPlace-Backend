@@ -24,44 +24,53 @@ export const getPlaceById = async (req, res) => {
 };
 
 export const createPlace = (req, res) => {
-  upload(req, res, async (err) => {
-    if (err) {
-      return res.status(400).json({ message: 'Error uploading file', error: err.message });
-    }
+  if (!req.file) {
+    // Jika tidak ada file yang diupload, lanjutkan tanpa upload ke Cloudinary
+    const { name, description, googleMapsLink, address } = req.body;
 
-    try {
-      const { name, description, googleMapsLink, address } = req.body;
+    const place = new Place({
+      name,
+      description,
+      googleMapsLink,
+      address,
+    });
 
-      if (!req.file) {
-        return res.status(400).json({ message: 'Image is required' });
+    place.save()
+      .then(() => res.status(201).json({ message: 'Place created successfully', data: place }))
+      .catch((err) => res.status(500).json({ message: 'Error saving place', error: err.message }));
+  } else {
+    upload(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({ message: 'Error uploading file', error: err.message });
       }
 
-      // Upload gambar ke Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.buffer, {
-        folder: 'places',  // Menentukan folder di Cloudinary
-        public_id: `${Date.now()}`, // Nama unik untuk file
-      });
+      try {
+        const { name, description, googleMapsLink, address } = req.body;
+        const result = await cloudinary.uploader.upload(req.file.buffer, {
+          folder: 'places',
+          public_id: `${Date.now()}`,
+        });
 
-      // Mendapatkan URL gambar dari Cloudinary
-      const imageUrl = result.secure_url;
+        const imageUrl = result.secure_url;
 
-      // Simpan data tempat ke database
-      const place = new Place({
-        name,
-        description,
-        googleMapsLink,
-        image: imageUrl,  // Menyimpan URL gambar Cloudinary
-        address,
-      });
+        const place = new Place({
+          name,
+          description,
+          googleMapsLink,
+          image: imageUrl,
+          address,
+        });
 
-      await place.save();
-      return res.status(201).json({ message: 'Place created successfully', data: place });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Error creating place', error: error.message });
-    }
-  });
+        await place.save();
+        return res.status(201).json({ message: 'Place created successfully', data: place });
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error creating place', error: error.message });
+      }
+    });
+  }
 };
+
 
 
 export const updatePlace = async (req, res) => {
