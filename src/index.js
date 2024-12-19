@@ -18,7 +18,6 @@ const app = express();
 // Konfigurasi CORS
 const allowedOrigins = [
   'https://find-your-place-frontend.vercel.app', // Origin yang diizinkan
-  'http://localhost:5173' // Tambahkan origin lokal Anda
 ];
 
 const corsOptions = {
