@@ -1,16 +1,20 @@
-import cloudinary from 'cloudinary';
-import multer from 'multer';
+import multer from "multer";
 
-// Konfigurasi Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/uploads");
+  },
+  filename: function (req, file, cb) {
+    const filename = `${Date.now()}-${file.originalname}`;
+    cb(null, filename);
+  },
 });
 
-// Konfigurasi Multer untuk menangani file
-const storage = multer.memoryStorage(); // Menggunakan memory storage untuk mengirim file ke Cloudinary
-const upload = multer({ storage: storage }); // Menangani file dengan Multer
-
-// Ekspor middleware upload
-export const uploadMiddleware = upload.single('image'); // Ekspor middleware sebagai uploadMiddleware
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === "image/jpg" || file.mimetype === "image/png") {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+export const upload = multer({ storage, fileFilter });
