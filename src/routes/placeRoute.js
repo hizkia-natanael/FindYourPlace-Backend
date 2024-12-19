@@ -221,3 +221,4 @@ router.put(
 router.delete("/place/:id", deletePlace);
 
 export default router;
+
