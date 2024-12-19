@@ -10,56 +10,66 @@ import adminRouter from "./routes/adminRoute.js"
 import morgan from "morgan";
 import cors from 'cors'; 
 
-
 dotenv.config();
 const app = express();
+
 // Konfigurasi CORS
 const allowedOrigins = [
- 'https://find-your-place-frontend.vercel.app', // Origin yang diizinkan
- 'http://localhost:5173' // Tambahkan origin lokal Anda
+  'https://find-your-place-frontend.vercel.app', // Origin yang diizinkan
+  'http://localhost:5173' // Origin lokal untuk pengembangan
 ];
+
 const corsOptions = {
- origin: function (origin, callback) {
-   // Jika origin tidak ada (misalnya, saat menguji di Postman), izinkan
-   if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-     callback(null, true);
-   } else {
-     callback(new Error('Not allowed by CORS'));
-   }
- },
- methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode yang diizinkan
- allowedHeaders: ['Content-Type', 'Authorization'], // Header yang diizinkan
- credentials: true, // Jika Anda perlu mengizinkan cookie
+  origin: function (origin, callback) {
+    // Logging untuk melihat origin yang diterima
+    console.log('Origin:', origin);
+    
+    // Jika origin tidak ada (misalnya, saat menguji di Postman), izinkan
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode yang diizinkan
+  allowedHeaders: ['Content-Type', 'Authorization'], // Header yang diizinkan
+  credentials: true, // Jika Anda perlu mengizinkan cookie
 };
+
 app.use(cors(corsOptions));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use("/uploads", express.static("public/uploads"));
 app.use(express.urlencoded({ extended: true }));
-// Swagger UI route 
+
+// Swagger UI route
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// API Routes
 app.use("/api/v1", placeRouter);
 app.use("/api/v1/auth", userRouter);
 app.use("/api/v1/", reviewRouter);
 app.use("/api/v1/auth", adminRouter);
+
+// Test route
 app.get("/", (req, res) => {
- res.json({ message: "Selamat datang di API Find Your Place" });
+  res.json({ message: "Selamat datang di API Find Your Place" });
 });
+
+// 404 handler for non-existing routes
 app.use("*", (req, res) => {
- res.status(404).json({ message: "NOT FOUND" });
+  res.status(404).json({ message: "NOT FOUND" });
 });
+
+// Database connection and server startup
 mongoose
- .connect(process.env.MONGODB_URI)
- .then(() =>
-   app.listen(process.env.PORT, () => {
-     console.log(
-       `server is running on http://localhost:${process.env.PORT} and database connected `
-     );
-     console.log(
-       `Swagger display on http://localhost:${process.env.PORT}/docs `
-     );
-   })
- )
- .catch((error) => {
-   console.log(error);
- });
+  .connect(process.env.MONGODB_URI)
+  .then(() =>
+    app.listen(process.env.PORT, () => {
+      console.log(`Server is running on http://localhost:${process.env.PORT} and database connected`);
+      console.log(`Swagger display on http://localhost:${process.env.PORT}/docs`);
+    })
+  )
+  .catch((error) => {
+    console.log(error);
+  });
