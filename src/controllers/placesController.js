@@ -1,4 +1,3 @@
-import cloudinary from 'cloudinary';
 import Place from "../models/placeModel.js";
 import { uploadRemover } from '../utils/uploadRemover.js';
 
