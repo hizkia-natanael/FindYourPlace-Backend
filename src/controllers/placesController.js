@@ -1,3 +1,4 @@
+import cloudinary from 'cloudinary';
 import Place from "../models/placeModel.js";
 
 export const getPlace = async (req, res) => {
@@ -23,55 +24,35 @@ export const getPlaceById = async (req, res) => {
   }
 };
 
-export const createPlace = (req, res) => {
-  if (!req.file) {
-    // Jika tidak ada file yang diupload, lanjutkan tanpa upload ke Cloudinary
+export const createPlace = async (req, res) => {
+  try {
     const { name, description, googleMapsLink, address } = req.body;
 
+    // Upload gambar ke Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.buffer, {
+      folder: 'places',  // Anda dapat menentukan folder di Cloudinary
+      public_id: `${Date.now()}`, // Menentukan nama unik untuk file yang diupload
+    });
+
+    // Mendapatkan URL gambar dari Cloudinary
+    const imageUrl = result.secure_url;
+
+    // Simpan data tempat ke database
     const place = new Place({
       name,
       description,
       googleMapsLink,
+      image: imageUrl,  // Menggunakan URL gambar dari Cloudinary
       address,
     });
 
-    place.save()
-      .then(() => res.status(201).json({ message: 'Place created successfully', data: place }))
-      .catch((err) => res.status(500).json({ message: 'Error saving place', error: err.message }));
-  } else {
-    upload(req, res, async (err) => {
-      if (err) {
-        return res.status(400).json({ message: 'Error uploading file', error: err.message });
-      }
-
-      try {
-        const { name, description, googleMapsLink, address } = req.body;
-        const result = await cloudinary.uploader.upload(req.file.buffer, {
-          folder: 'places',
-          public_id: `${Date.now()}`,
-        });
-
-        const imageUrl = result.secure_url;
-
-        const place = new Place({
-          name,
-          description,
-          googleMapsLink,
-          image: imageUrl,
-          address,
-        });
-
-        await place.save();
-        return res.status(201).json({ message: 'Place created successfully', data: place });
-      } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Error creating place', error: error.message });
-      }
-    });
+    await place.save();
+    return res.status(201).json({ message: 'Place created successfully', data: place });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error creating place', error: error.message });
   }
 };
-
-
 
 export const updatePlace = async (req, res) => {
   const placeId = req.params.id;
