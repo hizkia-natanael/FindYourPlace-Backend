@@ -96,7 +96,6 @@ router.get("/place/:id", getPlaceById);
  *             required:
  *               - name
  *               - description
- *               - images
  *             properties:
  *               name:
  *                 type: string
@@ -114,20 +113,17 @@ router.get("/place/:id", getPlaceById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Place'
- *       400:
- *         description: Validasi gagal
  */
 router.post(
   "/place",
-  upload.single("images"), // Menggunakan field 'images' sesuai Swagger
+  upload.single("image"),
   [
-    body("name").not().isEmpty().withMessage("Name is required"),
-    body("description").not().isEmpty().withMessage("Description is required"),
+    body("name").not().isEmpty().withMessage("name is required"),
+    body("description").not().isEmpty().withMessage("description is required"),
   ],
   validateRequest,
   createPlace
 );
-
 
 /**
  * @swagger
@@ -143,7 +139,7 @@ router.post(
  *         required: true
  *         description: ID tempat
  *     requestBody:
- *       required: false
+ *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
@@ -165,30 +161,27 @@ router.post(
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Place'
- *       400:
- *         description: Validasi gagal
  *       404:
  *         description: Tempat tidak ditemukan
  */
 router.put(
   "/place/:id",
-  upload.single("images"), // Disamakan dengan 'images' untuk konsistensi
+  upload.single("image"),
   [
     body("name")
       .optional()
       .not()
       .isEmpty()
-      .withMessage("Name tidak boleh kosong"),
+      .withMessage("name tidak boleh kosong"),
     body("description")
       .optional()
       .not()
       .isEmpty()
-      .withMessage("Description tidak boleh kosong"),
+      .withMessage("description tidak boleh kosong"),
   ],
   validateRequest,
   updatePlace
 );
-
 
 /**
  * @swagger
@@ -221,4 +214,3 @@ router.put(
 router.delete("/place/:id", deletePlace);
 
 export default router;
-
