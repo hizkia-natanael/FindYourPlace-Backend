@@ -10,7 +10,7 @@ cloudinary.config({
 
 // Konfigurasi Multer untuk menangani file
 const storage = multer.memoryStorage();  // Menggunakan memory storage untuk mengirim file ke Cloudinary
-const upload = multer({ storage: storage }).single('image');  // Menangani satu file dengan field 'image'
+const upload = multer({ storage: storage });  // Menangani file dengan Multer
 
 // Ekspor middleware upload
-export { upload };
+export const uploadMiddleware = upload.single('image');  // Ekspor middleware sebagai uploadMiddleware
