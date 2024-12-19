@@ -23,24 +23,46 @@ export const getPlaceById = async (req, res) => {
   }
 };
 
-export const createPlace = async (req, res) => {
-  const { name, description, googleMapsLink, address } = req.body;
-  const image = req.file ? req.file.filename : null;
+export const createPlace = (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ message: 'Error uploading file', error: err.message });
+    }
 
-  try {
-    const places = new Place({
-      name,
-      description,
-      googleMapsLink,
-      image,
-      address,
-    });
-    const savePlace = await places.save();
-    return res.status(201).json({ message: "create place", data: savePlace });
-  } catch (error) {
-    return res.status(500).json({ message: error });
-  }
+    try {
+      const { name, description, googleMapsLink, address } = req.body;
+
+      if (!req.file) {
+        return res.status(400).json({ message: 'Image is required' });
+      }
+
+      // Upload gambar ke Cloudinary
+      const result = await cloudinary.uploader.upload(req.file.buffer, {
+        folder: 'places',  // Menentukan folder di Cloudinary
+        public_id: `${Date.now()}`, // Nama unik untuk file
+      });
+
+      // Mendapatkan URL gambar dari Cloudinary
+      const imageUrl = result.secure_url;
+
+      // Simpan data tempat ke database
+      const place = new Place({
+        name,
+        description,
+        googleMapsLink,
+        image: imageUrl,  // Menyimpan URL gambar Cloudinary
+        address,
+      });
+
+      await place.save();
+      return res.status(201).json({ message: 'Place created successfully', data: place });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error creating place', error: error.message });
+    }
+  });
 };
+
 
 export const updatePlace = async (req, res) => {
   const placeId = req.params.id;
