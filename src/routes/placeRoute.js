@@ -128,7 +128,6 @@ router.post(
   createPlace
 );
 
-
 /**
  * @swagger
  * /place/{id}:
@@ -188,7 +187,6 @@ router.put(
   validateRequest,
   updatePlace
 );
-
 
 /**
  * @swagger

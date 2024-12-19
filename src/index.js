@@ -16,8 +16,20 @@ dotenv.config();
 const app = express();
 
 // Konfigurasi CORS
+const allowedOrigins = [
+  'https://find-your-place-frontend.vercel.app', // Origin yang diizinkan
+  'http://localhost:5173' // Tambahkan origin lokal Anda
+];
+
 const corsOptions = {
-  origin: 'https://find-your-place-frontend.vercel.app', // Ganti dengan domain frontend Anda
+  origin: function (origin, callback) {
+    // Jika origin tidak ada (misalnya, saat menguji di Postman), izinkan
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode yang diizinkan
   allowedHeaders: ['Content-Type', 'Authorization'], // Header yang diizinkan
   credentials: true, // Jika Anda perlu mengizinkan cookie
